@@ -212,7 +212,10 @@ def format_service_card(service: Service) -> str:
 
 
 def format_services_list() -> str:
-    lines = ["<b>Услуги и цены</b>\nКарточки услуг ниже — добавьте нужные в корзину:\n"]
+    lines = [
+        "<b>Услуги и цены</b>\n"
+        "Выберите услугу кнопкой внизу или добавьте из карточек:\n"
+    ]
     for service in SERVICES:
         lines.append(f"• {service.title} — {service.price}")
     lines.append(
