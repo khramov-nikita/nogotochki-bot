@@ -35,13 +35,15 @@ def main_menu() -> ReplyKeyboardMarkup:
 
 def services_menu() -> ReplyKeyboardMarkup:
     rows: list[list[KeyboardButton]] = [
-        [KeyboardButton(text=BTN_CART)],
-        [KeyboardButton(text=BTN_BACK)],
+        [KeyboardButton(text=service.title)] for service in SERVICES
     ]
+    rows.append(
+        [KeyboardButton(text=BTN_CART), KeyboardButton(text=BTN_BACK)]
+    )
     return ReplyKeyboardMarkup(
         keyboard=rows,
         resize_keyboard=True,
-        input_field_placeholder="Листайте карточки услуг…",
+        input_field_placeholder="Выберите услугу…",
     )
 
 

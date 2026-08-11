@@ -10,6 +10,8 @@ from app.data.knowledge import (
     CART_EMPTY_TEXT,
     ORDER_ALREADY_EXISTS_TEXT,
     ORDER_EMPTY_CART_TEXT,
+    SERVICES_BY_TITLE,
+    format_service,
     format_service_card,
     format_services_list,
 )
@@ -39,6 +41,7 @@ async def _user_db_id(message_or_cb: Message | CallbackQuery, cart: CartService)
 
 
 async def send_services_showcase(message: Message) -> None:
+    # Reply-клавиатура со списком услуг + карточки с inline «Добавить в корзину»
     await message.answer(format_services_list(), reply_markup=services_menu())
     for service in showcase_services():
         await message.answer(
@@ -54,16 +57,32 @@ async def send_cart_view(
 ) -> None:
     items = await cart.get_items(user_id)
     text = cart.format_cart_text(items)
-    await message.answer(
-        text,
-        reply_markup=cart_keyboard(items) if items else main_menu(),
-    )
+    if items:
+        # Сначала обновляем нижнее меню, затем карточку с inline-кнопками
+        await message.answer("Ваша корзина:", reply_markup=main_menu())
+        await message.answer(text, reply_markup=cart_keyboard(items))
+    else:
+        await message.answer(text, reply_markup=main_menu())
 
 
 @router.message(Command("services"))
 @router.message(F.text == BTN_SERVICES)
 async def show_services_showcase(message: Message) -> None:
     await send_services_showcase(message)
+
+
+@router.message(F.text.in_(set(SERVICES_BY_TITLE)))
+async def show_service_detail(message: Message) -> None:
+    service = SERVICES_BY_TITLE[message.text or ""]
+    # Reply-меню услуг оставляем доступным отдельным сообщением
+    await message.answer(
+        "Карточка услуги:",
+        reply_markup=services_menu(),
+    )
+    await message.answer(
+        format_service(service),
+        reply_markup=add_to_cart_keyboard(service),
+    )
 
 
 @router.message(Command("cart"))
