@@ -12,6 +12,7 @@ class Service:
     description: str
     price: str
     duration: str
+    price_kopecks: int
 
 
 SERVICES: tuple[Service, ...] = (
@@ -21,6 +22,7 @@ SERVICES: tuple[Service, ...] = (
         description="Уход за ногтями и стойкое покрытие на 3–4 недели",
         price="1 800 ₽",
         duration="1,5 часа",
+        price_kopecks=180_000,
     ),
     Service(
         key="manicure_pedicure",
@@ -28,6 +30,7 @@ SERVICES: tuple[Service, ...] = (
         description="Комплекс из двух процедур за один визит",
         price="3 200 ₽",
         duration="2,5 часа",
+        price_kopecks=320_000,
     ),
     Service(
         key="extensions",
@@ -35,6 +38,7 @@ SERVICES: tuple[Service, ...] = (
         description="Моделирование желаемой формы и длины ногтей",
         price="2 800 ₽",
         duration="2,5 часа",
+        price_kopecks=280_000,
     ),
     Service(
         key="design",
@@ -42,6 +46,7 @@ SERVICES: tuple[Service, ...] = (
         description="Рисунок, втирка, стразы или френч",
         price="300 ₽ за два ногтя",
         duration="+15–30 минут к сеансу",
+        price_kopecks=30_000,
     ),
     Service(
         key="brows_color",
@@ -49,6 +54,7 @@ SERVICES: tuple[Service, ...] = (
         description="Коррекция формы и окрашивание волосков",
         price="1 200 ₽",
         duration="40 минут",
+        price_kopecks=120_000,
     ),
     Service(
         key="brows_lamination",
@@ -56,16 +62,33 @@ SERVICES: tuple[Service, ...] = (
         description="Укладка и стойкая форма бровей на 4–6 недель",
         price="1 800 ₽",
         duration="1 час",
+        price_kopecks=180_000,
     ),
     Service(
-        key="certificate",
-        title="Подарочный сертификат",
-        description="Сертификат на услуги студии выбранного номинала. Действует в течение шести месяцев",
-        price="3 000 ₽ или 5 000 ₽",
+        key="certificate_3000",
+        title="Подарочный сертификат 3 000 ₽",
+        description=(
+            "Сертификат на услуги студии номиналом 3 000 ₽. "
+            "Действует в течение шести месяцев"
+        ),
+        price="3 000 ₽",
         duration="—",
+        price_kopecks=300_000,
+    ),
+    Service(
+        key="certificate_5000",
+        title="Подарочный сертификат 5 000 ₽",
+        description=(
+            "Сертификат на услуги студии номиналом 5 000 ₽. "
+            "Действует в течение шести месяцев"
+        ),
+        price="5 000 ₽",
+        duration="—",
+        price_kopecks=500_000,
     ),
 )
 
+SERVICES_BY_KEY: dict[str, Service] = {s.key: s for s in SERVICES}
 SERVICES_BY_TITLE: dict[str, Service] = {s.title: s for s in SERVICES}
 
 FAQ: tuple[tuple[str, str], ...] = (
@@ -112,35 +135,47 @@ ABOUT_TEXT = (
 
 BOOKING_TEXT = (
     "Как записаться:\n"
-    "1. Выберите услугу.\n"
-    "2. Внесите полную предоплату.\n"
-    "3. Дождитесь подтверждения и согласуйте удобное время с мастером.\n\n"
-    "Важно: бот не принимает оплату и не подтверждает слот. "
-    "Оплату и финальное время согласуйте напрямую с мастером.\n\n"
+    "1. Откройте «Услуги и цены» и добавьте нужные услуги в корзину.\n"
+    "2. Нажмите «Оформить заказ» и оплатите предоплату по ссылке ЮKassa.\n"
+    "3. Вернитесь в чат и нажмите «Я оплатил» — бот проверит статус платежа.\n"
+    "4. После подтверждения оплаты мастер согласует удобное время.\n\n"
+    "Важно: слот записи подтверждает мастер. "
     "При отмене не менее чем за сутки предоплату можно перенести на другую дату."
 )
 
 WELCOME_TEXT = (
     "Здравствуйте! Я бот студии «Ноготочки».\n\n"
     "Помогу рассказать об услугах и ценах, ответить на частые вопросы "
-    "и объяснить, как записаться.\n\n"
+    "и оформить предоплату через корзину.\n\n"
     "Выберите пункт в меню ниже."
 )
 
 HELP_TEXT = (
     "Доступно:\n"
-    "• Услуги и цены — прайс и описание процедур\n"
+    "• Услуги и цены — витрина с кнопкой «Добавить в корзину»\n"
+    "• Корзина — список услуг, сумма и оформление заказа\n"
     "• Частые вопросы — ответы из базы знаний\n"
-    "• Запись — шаги записи и правила предоплаты\n"
+    "• Запись — шаги записи и предоплаты\n"
     "• О студии — кратко о мастере и условиях приёма\n"
     "• Связаться с человеком — контакт администратора студии\n\n"
-    "Команды: /start, /help"
+    "Команды: /start, /help, /services, /cart, /order"
 )
 
 CONTACT_UNAVAILABLE_TEXT = (
     "Контакт администратора пока не настроен. "
     "Напишите в студию напрямую или попробуйте позже."
 )
+
+CART_EMPTY_TEXT = "Корзина пуста. Добавьте услуги из раздела «Услуги и цены»."
+ORDER_EMPTY_CART_TEXT = "Нельзя оформить заказ: корзина пуста."
+ORDER_ALREADY_EXISTS_TEXT = (
+    "У вас уже есть неоплаченный заказ. Оплатите его или дождитесь проверки."
+)
+
+
+def format_price_rub(kopecks: int) -> str:
+    rubles = kopecks // 100
+    return f"{rubles:,}".replace(",", " ") + " ₽"
 
 
 def format_admin_contact_text(
@@ -169,12 +204,19 @@ def format_service(service: Service) -> str:
     )
 
 
+def format_service_card(service: Service) -> str:
+    return (
+        f"<b>{service.title}</b>\n"
+        f"Цена: {service.price}"
+    )
+
+
 def format_services_list() -> str:
-    lines = ["<b>Услуги и цены</b>\nВыберите услугу кнопкой ниже:\n"]
+    lines = ["<b>Услуги и цены</b>\nКарточки услуг ниже — добавьте нужные в корзину:\n"]
     for service in SERVICES:
         lines.append(f"• {service.title} — {service.price}")
     lines.append(
-        "\nДля бронирования нужна полная предоплата; "
+        "\nДля бронирования нужна полная предоплата через корзину; "
         "после оплаты мастер согласует дату и время."
     )
     return "\n".join(lines)
