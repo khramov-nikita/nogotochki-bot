@@ -132,9 +132,32 @@ HELP_TEXT = (
     "• Услуги и цены — прайс и описание процедур\n"
     "• Частые вопросы — ответы из базы знаний\n"
     "• Запись — шаги записи и правила предоплаты\n"
-    "• О студии — кратко о мастере и условиях приёма\n\n"
+    "• О студии — кратко о мастере и условиях приёма\n"
+    "• Связаться с человеком — контакт администратора студии\n\n"
     "Команды: /start, /help"
 )
+
+CONTACT_UNAVAILABLE_TEXT = (
+    "Контакт администратора пока не настроен. "
+    "Напишите в студию напрямую или попробуйте позже."
+)
+
+
+def format_admin_contact_text(
+    name: str,
+    telegram: str,
+    phone: str,
+) -> str:
+    lines = [
+        "Контакт администратора студии «Ноготочки»:",
+        f"Имя: {name}",
+    ]
+    if telegram:
+        lines.append(f"Telegram: @{telegram}")
+        lines.append(f"Написать: https://t.me/{telegram}")
+    if phone:
+        lines.append(f"Телефон: {phone}")
+    return "\n".join(lines)
 
 
 def format_service(service: Service) -> str:
