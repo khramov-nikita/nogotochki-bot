@@ -81,23 +81,32 @@ def cart_keyboard(items: list[CartItem]) -> InlineKeyboardMarkup:
     return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
-def order_payment_keyboard(order: Order) -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(
-                    text="Оплатить",
-                    callback_data=f"order:pay:{order.id}",
-                )
-            ],
-            [
-                InlineKeyboardButton(
-                    text="Я оплатил",
-                    callback_data=f"order:paid:{order.id}",
-                )
-            ],
+def order_payment_keyboard(
+    order: Order,
+    payment_url: str | None = None,
+) -> InlineKeyboardMarkup:
+    rows: list[list[InlineKeyboardButton]] = []
+    if payment_url:
+        rows.append(
+            [InlineKeyboardButton(text="Открыть страницу оплаты", url=payment_url)]
+        )
+    rows.append(
+        [
+            InlineKeyboardButton(
+                text="Оплатить" if not payment_url else "Обновить ссылку",
+                callback_data=f"order:pay:{order.id}",
+            )
         ]
     )
+    rows.append(
+        [
+            InlineKeyboardButton(
+                text="Я оплатил",
+                callback_data=f"order:paid:{order.id}",
+            )
+        ]
+    )
+    return InlineKeyboardMarkup(inline_keyboard=rows)
 
 
 def showcase_services() -> list[Service]:
