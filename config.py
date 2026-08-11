@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import os
 from dataclasses import dataclass
+from pathlib import Path
 
 from dotenv import load_dotenv
+
+DEFAULT_DB_PATH = Path(__file__).resolve().parent / "data" / "bot.db"
 
 
 class ConfigError(Exception):
@@ -21,6 +24,11 @@ class Config:
     admin_name: str
     admin_telegram: str
     admin_phone: str
+    db_path: Path
+    yookassa_shop_id: str
+    yookassa_secret_key: str
+    yookassa_return_url: str
+    payments_mock: bool
 
 
 def load_config() -> Config:
@@ -46,6 +54,21 @@ def load_config() -> Config:
     admin_telegram = (os.getenv("ADMIN_TELEGRAM") or "").strip().lstrip("@")
     admin_phone = (os.getenv("ADMIN_PHONE") or "").strip()
 
+    db_path_raw = (os.getenv("DATABASE_PATH") or "").strip()
+    db_path = Path(db_path_raw) if db_path_raw else DEFAULT_DB_PATH
+
+    yookassa_shop_id = (os.getenv("YOOKASSA_SHOP_ID") or "").strip()
+    yookassa_secret_key = (os.getenv("YOOKASSA_SECRET_KEY") or "").strip()
+    yookassa_return_url = (
+        os.getenv("YOOKASSA_RETURN_URL") or "https://t.me/"
+    ).strip()
+
+    payments_mock_raw = (os.getenv("PAYMENTS_MOCK") or "").strip().lower()
+    payments_mock = payments_mock_raw in {"1", "true", "yes", "on"}
+    if not yookassa_shop_id or not yookassa_secret_key:
+        # Без ключей работаем через мок, чтобы бот и тесты стартовали локально
+        payments_mock = True
+
     return Config(
         bot_token=token,
         deepseek_api_key=deepseek_api_key,
@@ -54,4 +77,9 @@ def load_config() -> Config:
         admin_name=admin_name,
         admin_telegram=admin_telegram,
         admin_phone=admin_phone,
+        db_path=db_path,
+        yookassa_shop_id=yookassa_shop_id,
+        yookassa_secret_key=yookassa_secret_key,
+        yookassa_return_url=yookassa_return_url,
+        payments_mock=payments_mock,
     )
