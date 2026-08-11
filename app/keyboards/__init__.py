@@ -10,6 +10,7 @@ BTN_SERVICES = "Услуги и цены"
 BTN_FAQ = "Частые вопросы"
 BTN_BOOKING = "Запись"
 BTN_ABOUT = "О студии"
+BTN_CONTACT = "Связаться с человеком"
 BTN_BACK = "« В меню"
 
 
@@ -18,6 +19,7 @@ def main_menu() -> ReplyKeyboardMarkup:
         keyboard=[
             [KeyboardButton(text=BTN_SERVICES), KeyboardButton(text=BTN_FAQ)],
             [KeyboardButton(text=BTN_BOOKING), KeyboardButton(text=BTN_ABOUT)],
+            [KeyboardButton(text=BTN_CONTACT)],
         ],
         resize_keyboard=True,
         input_field_placeholder="Выберите пункт меню…",
